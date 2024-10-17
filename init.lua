@@ -326,7 +326,7 @@ require('lazy').setup {
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
-      vim.keymap.set('n', '<leader>si', function()
+      vim.keymap.set('n', '<leader>sif', function()
         builtin.find_files {
           no_ignore = true,
           hidden = true,
@@ -343,6 +343,15 @@ require('lazy').setup {
           },
         }
       end, { desc = '[S]earch [I]gnored CPP Files' })
+
+      vim.keymap.set('n', '<leader>sig', function()
+        builtin.live_grep {
+          additional_args = {
+            '-u',
+          },
+          type_filter = 'cpp',
+        }
+      end, { desc = '[S]earch Ignored CPP Grep' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -800,6 +809,11 @@ require('lazy').setup {
       local statusline = require 'mini.statusline'
       -- set use_icons to true if you have a Nerd Font
       statusline.setup { use_icons = vim.g.have_nerd_font }
+
+      local minifiles = require 'mini.files'
+      minifiles.setup()
+
+      vim.keymap.set('n', '<leader>e', MiniFiles.open, { desc = 'Open Mini Files' })
 
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
