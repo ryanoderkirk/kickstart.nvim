@@ -1,48 +1,4 @@
 --[[
-
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-========                                    .-----.          ========
-========         .----------------------.   | === |          ========
-========         |.-""""""""""""""""""-.|   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||   KICKSTART.NVIM   ||   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||                    ||   |-----|          ========
-========         ||:Tutor              ||   |:::::|          ========
-========         |'-..................-'|   |____o|          ========
-========         `"")----------------(""`   ___________      ========
-========        /::::::::::|  |::::::::::\  \ no mouse \     ========
-========       /:::========|  |==hjkl==:::\  \ required \    ========
-========      '""""""""""""'  '""""""""""""'  '""""""""""'   ========
-========                                                     ========
-=====================================================================
-=====================================================================
-
-What is Kickstart?
-
-  Kickstart.nvim is *not* a distribution.
-
-  Kickstart.nvim is a starting point for your own configuration.
-    The goal is that you can read every line of code, top-to-bottom, understand
-    what your configuration is doing, and modify it to suit your needs.
-
-    Once you've done that, you can start exploring, configuring and tinkering to
-    make Neovim your own! That might mean leaving Kickstart just the way it is for a while
-    or immediately breaking it into modular pieces. It's up to you!
-
-    If you don't know anything about Lua, I recommend taking some time to read through
-    a guide. One possible example which will only take 10-15 minutes:
-      - https://learnxinyminutes.com/docs/lua/
-
-    After understanding a bit more about Lua, you can use `:help lua-guide` as a
-    reference for how Neovim integrates Lua.
-    - :help lua-guide
-    - (or HTML version): https://neovim.io/doc/user/lua-guide.html
-
-Kickstart Guide:
-
   TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
 
     If you don't know what this means, type the following:
@@ -91,7 +47,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -192,10 +148,18 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 
 -- mapping f2 to open init.lua buffer
 
-local function open_init_lua() --in the future, add funcitonality to open a buffer of the file if we already have it open
+local function open_init_lua()
   vim.cmd('e ' .. vim.fn.stdpath 'config' .. '\\init.lua')
 end
 vim.keymap.set('n', '<Leader><F2>', open_init_lua, { desc = 'Open init.lua' })
+
+local function explorerFromCurrentBuffer()
+  local path = vim.fn.expand '%:p:h' --get path of selected buffer
+  path = string.gsub(path, '/', '\\') --swap all backslashes
+  os.execute('start explorer ' .. '"' .. path .. '"')
+end
+
+vim.keymap.set('n', '<Leader>oe', explorerFromCurrentBuffer, { desc = 'Open Explorer' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -268,6 +232,14 @@ require('lazy').setup {
     },
   },
 
+  -- Useful for getting pretty icons, but requires a Nerd Font.
+  { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+
+  {
+    'nvim-telescope/telescope-file-browser.nvim',
+    dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
+  },
+
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
@@ -288,9 +260,6 @@ require('lazy').setup {
         end,
       },
       { 'nvim-telescope/telescope-ui-select.nvim' },
-
-      -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
     config = function()
       require('telescope').setup {
@@ -301,10 +270,22 @@ require('lazy').setup {
           mappings = {
             i = { ['<c-enter>'] = 'to_fuzzy_refine' },
           },
+          layout_config = {
+            vertical = { height = 0.25 },
+          },
+        },
+        pickers = {
+          find_files = {
+            previewer = true,
+            theme = 'ivy',
+          },
         },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_ivy(),
+          },
+          ['file_browser'] = {
+            hijack_netrw = true,
           },
         },
       }
@@ -312,6 +293,7 @@ require('lazy').setup {
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require('telescope').load_extension 'file_browser')
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -325,13 +307,13 @@ require('lazy').setup {
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<space>fe', ':Telescope file_browser<CR>', { desc = '[F]ile [E]xplorer' })
 
       vim.keymap.set('n', '<leader>sif', function()
         builtin.find_files {
           no_ignore = true,
           hidden = true,
           no_ignore_parent = true,
-
           find_command = {
             'rg',
             '--files',
@@ -340,6 +322,11 @@ require('lazy').setup {
             '--glob=*.hpp',
             '--glob=*.c',
             '--glob=*.h',
+            '--glob=*.clsx',
+            '--glob=*.sbsx',
+            '--glob=*.json',
+            '--glob=*.idl',
+            '--glob=*',
           },
         }
       end, { desc = '[S]earch [I]gnored CPP Files' })
@@ -780,6 +767,9 @@ require('lazy').setup {
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
     end,
+  },
+  {
+    'navarasu/onedark.nvim',
   },
 
   -- Highlight todo, notes, etc in comments
