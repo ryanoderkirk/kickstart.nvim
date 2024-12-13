@@ -1,6 +1,25 @@
 return {
 
   {
+    'SmiteshP/nvim-navic',
+    dependencies = { 'neovim/nvim-lspconfig' },
+  },
+  {
+    'neovim/nvim-lspconfig',
+    dependencies = {
+      {
+        'SmiteshP/nvim-navbuddy',
+        dependencies = {
+          'SmiteshP/nvim-navic',
+          'MunifTanjim/nui.nvim',
+        },
+        opts = { lsp = { auto_attach = true } },
+      },
+    },
+  },
+  -- your lsp config or other stuff
+
+  {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
     'folke/lazydev.nvim',
@@ -125,6 +144,12 @@ return {
           --
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+          if client.supports_method 'textDocument/documentSymbol' then
+            require('nvim-navic').attach(client, event.buf)
+            vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
+          end
+
           if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
@@ -394,9 +419,5 @@ return {
         },
       }
     end,
-  },
-  {
-    'SmiteshP/nvim-navic',
-    dependencies = { 'neovim/nvim-lspconfig' },
   },
 }

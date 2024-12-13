@@ -202,5 +202,9 @@ vim.keymap.set('n', '<leader>sn', function()
   builtin.find_files { cwd = vim.fn.stdpath 'config' }
 end, { desc = '[S]earch [N]eovim files' })
 
+-- Exclude filetype that nvim-dashboard uses in indent plugin
+require('ibl').update {
+  exclude = { filetypes = { 'dashboard' } },
+}
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
