@@ -208,3 +208,19 @@ require('ibl').update {
 }
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+--
+--
+local files_set_cwd = function(path)
+  -- Works only if cursor is on the valid file system entry
+  local cur_entry_path = MiniFiles.get_fs_entry().path
+  local cur_directory = vim.fs.dirname(cur_entry_path)
+  --vim.fn.chdir(cur_directory)
+  vim.cmd('tcd ' .. cur_directory)
+end
+
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'MiniFilesBufferCreate',
+  callback = function(args)
+    vim.keymap.set('n', 'zz', files_set_cwd, { buffer = args.data.buf_id, desc = 'set current directory' })
+  end,
+})
