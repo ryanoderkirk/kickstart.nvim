@@ -146,6 +146,7 @@ vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' }
 vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
 vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 vim.keymap.set('n', '<space>fe', ':Telescope file_browser<CR>', { desc = '[F]ile [E]xplorer' })
+vim.keymap.set('n', '<CR>q', 'Send to quickfix list', { desc = 'quickfix list' })
 
 vim.keymap.set('n', '<leader>sif', function()
   builtin.find_files {
@@ -160,10 +161,6 @@ vim.keymap.set('n', '<leader>sif', function()
       '--glob=*.hpp',
       '--glob=*.c',
       '--glob=*.h',
-      '--glob=*.clsx',
-      '--glob=*.sbsx',
-      '--glob=*.json',
-      '--glob=*.idl',
       '--glob=*',
     },
   }
@@ -174,10 +171,10 @@ vim.keymap.set('n', '<leader>sig', function()
     additional_args = {
       '-u',
     },
-    glob_pattern = '*',
+    glob_pattern = { '*.cpp', '*.c', '*.h', '*.hpp' },
     type_filter = 'cpp',
   }
-end, { desc = '[S]earch Ignored CPP Grep' })
+end, { desc = '[S]earch [I]gnored CPP [G]rep' })
 
 -- Slightly advanced example of overriding default behavior and theme
 vim.keymap.set('n', '<leader>/', function()
