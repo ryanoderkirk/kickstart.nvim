@@ -4,7 +4,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- Make line numbers default
 vim.opt.number = true
@@ -96,12 +96,20 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-  { import = 'plugins' },
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    This is the easiest way to modularize your config.
-  --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'plugins.LSP' },
+  { import = 'plugins.autocomplete' },
+  { import = 'plugins.autoformat' },
+  { import = 'plugins.autopairs' },
+  { import = 'plugins.colorschemes' },
+  --  { import = 'plugins.debug' },
+  { import = 'plugins.indent_line' },
+  { import = 'plugins.lint' },
+  { import = 'plugins.mini' },
+  { import = 'plugins.neo-tree' },
+  { import = 'plugins.telescope' },
+  { import = 'plugins.todo-comments' },
+  { import = 'plugins.treesitter' },
+  { import = 'plugins.which-key' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
