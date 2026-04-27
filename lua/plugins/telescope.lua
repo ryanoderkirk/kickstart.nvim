@@ -16,6 +16,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
   },
   config = function()
     require('telescope').setup {
+      -- pickers = {}
       extensions = {
         ['ui-select'] = {
           require('telescope.themes').get_dropdown(),
@@ -57,6 +58,13 @@ return { -- Fuzzy Finder (files, lsp, etc)
         prompt_title = 'Live Grep in Open Files',
       }
     end, { desc = '[S]earch [/] in Open Files' })
+
+    -- c grep
+    vim.keymap.set('n', '<leader>scg', function()
+      builtin.live_grep {
+        glob_pattern = { '*.c', '*.h' },
+      }
+    end, { desc = '[S]earch by [G]rep' })
 
     -- Shortcut for searching your Neovim configuration files
     vim.keymap.set('n', '<leader>sn', function()
