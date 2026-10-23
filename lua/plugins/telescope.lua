@@ -61,7 +61,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
     -- c grep
     vim.keymap.set('n', '<leader>scg', function()
       builtin.live_grep {
-        glob_pattern = { '*.c', '*.h' },
+        glob_pattern = { '*' },
       }
     end, { desc = '[S]earch by [G]rep' })
 
@@ -69,5 +69,11 @@ return { -- Fuzzy Finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>sn', function()
       builtin.find_files { cwd = vim.fn.stdpath 'config' }
     end, { desc = '[S]earch [N]eovim files' })
+
+    vim.keymap.set('n', '<leader>stf', function()
+      builtin.find_files {
+        hidden = true,
+      }
+    end, { desc = '[S]earch [T]est' })
   end,
 }
